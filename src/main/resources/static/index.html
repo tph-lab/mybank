@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>银行ATM服务</title>
+</head>
+<body>
+    <!--ctrl+alt+l格式化代码-->
+    <div id="app">
+        <form action="" method="post">
+            账号：<input type="text" name="accountId" v-model="accountId">
+            操作金额：<input type="text" name="money" v-model="money">
+            转入账号：<input type="text" name="inAccountId" v-model="inAccountId">
+            <input type="button" value="开户" class="btn" @click="openAccounts()">
+            <input type="button" value="存款" class="btn" @click="desposit()">
+            <input type="button" value="取款" class="btn" @click="withdraw()">
+            <input type="button" value="转账" class="btn" @click="transfer()">
+            <input type="button" value="查询" class="btn" @click="showBalance">
+
+            <div id="result" v-html="result"></div>
+        </form>
+    </div>
+
+
+    <!--        注意顺序-->
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        let vm=new Vue({
+            el:'#app',
+            data:{
+                accountId:"",
+                money:0.0,
+                inAccountId:"",
+                result:""
+            },
+            methods:{
+                openAccounts:function () {
+                    var params=new URLSearchParams();
+                    params.append("money",this.money);
+                    axios.post('/mybank/openAccounts',params).then(response=>{
+                        if(response.data.code==1){
+                            alert(11111)
+                            this.result="新开账号：<span class='point'>"+response.data.data.accountId+"</span>"+
+                                "余额为：<span class='point'>"+response.data.data.balance+"</span>";
+                        }else{
+                            this.result="<span class='err'>"+response.data.data.balance+"</span>";
+                        }
+                    }).catch(function (error) {
+                        this.result="<span class='err'>"+error+"</span>"
+                    });
+                },
+                desposit:function () {
+                    //URLSearchParams用法介绍:处理URL上的参数串的
+                    var params=new URLSearchParams();
+                    params.append("money",this.money);
+                    params.append("accountId",this.accountId);
+                    console.log("params:"+params.toString());
+                    axios.post('/mybank/deposite',params).then(response=>{
+                        if(response.data.code==1){
+                            this.result="账号：<span class='point'>"+response.data.data.accountId+"</span>"+
+                                "存款：<span class='point'>"+this.money+
+                                "<span>成功，当前余额为：</span>"+response.data.data.balance+"</span>";
+                        }else{
+                            this.result="<span class='err'>"+response.data.msg+"</span>";
+                        }
+                    }).catch(function (error) {//请求失败处理
+                        this.result="<span class='err'>"+error+"</span>"
+                    });
+                },
+                transfer:function () {
+                    var params=new URLSearchParams();
+                    params.append("money",this.money);
+                    params.append("accountId",this.accountId);
+                    params.append("inAccountId",this.inAccountId);
+                    axios.post('/mybank/transfer',params).then(response=>{
+                        if(response.data.code==1){
+                            this.result="账号：<span class='point'>"+response.data.data.accountId+"</span>"+
+                                "转账：<span class='point'>"+this.money+
+                                "给账号：<span class='point'>"+this.inAccountId+"</span>";
+                        }else{
+                            this.result="<span class='err'>"+response.data.msg+"</span>";
+                        }
+                    }).catch(function (error) {//请求失败处理
+                        this.result="<span class='err'>"+error+"</span>"
+                    });
+                },
+                showBalance:function () {
+                    var params=new URLSearchParams();
+                    params.append("accountId",this.accountId);
+                    axios.post('/mybank/showBalance',params).then(response=>{
+                        if(response.data.code==1){
+                            this.result="账号：<span class='point'>"+response.data.data.accountId+"</span>"+
+                                "余额：<span class='point'>"+response.data.data.balance+"</span>";
+
+                        }else{
+                            this.result="<span class='err'>"+response.data.msg+"</span>";
+                        }
+                    }).catch(function (error) {//请求失败处理
+                        this.result="<span class='err'>"+error+"</span>"
+                    });
+                },
+                withdraw:function () {
+                    //get/post都可以用
+                    var params=new URLSearchParams();
+                    params.append("accountId",this.accountId);
+                    params.append("money",this.money)
+                    axios.post('/mybank/withdraw',params).then(response=>{
+                        if(response.data.code==1){
+                            this.result="账号：<span class='point'>"+response.data.data.accountId+"</span>"+
+                                "取款：<span class='point'>"+this.money+
+                                "<span>成功，当前余额为：</span>"+response.data.data.balance+"</span>";
+
+                        }else{
+                            this.result="<span class='err'>"+response.data.msg+"</span>";
+                        }
+                    }).catch(function (error) {//请求失败处理
+                        this.result="<span class='err'>"+error+"</span>"
+                    });
+                }
+            }
+        })
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+server:
+  port: 8081
+  session.timeout: 60000
+  servlet.contextpath: /mybank
+
+
+
+#日志配置
+logging:
+  level:
+    root: warn
+    org.springframework: warn
+    com.yc: info
+  file:
+    path: ./logs
+    name: yc_mybank.log
+
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/testbank?serverTimezone=GMT%2B8
+    username: root
+    password: Tph123456
+
+
+
+#开启swagger
+swagger:
+  enabled: true
